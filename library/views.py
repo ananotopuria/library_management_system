@@ -1,29 +1,33 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from .models import Book
+from rest_framework import generics
+from .models import Book, Author, Genre
+from .serializers import BookSerializer, AuthorSerializer, GenreSerializer
 
-def book_list(request):
-    books = Book.objects.all()
-    return render(request, 'library/book_list.html', {'books': books})
+# List and create books
+class BookListCreate(generics.ListCreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
 
-def book_detail(request, book_id):
-    try:
-        book = Book.objects.get(id=book_id)
-    except Book.DoesNotExist:
-        return HttpResponse("Book not found", status=404)
+# Retrieve, update, or delete a book
+class BookDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
 
-    return render(request, 'library/book_detail.html', {'book': book})
+# List and create authors
+class AuthorListCreate(generics.ListCreateAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
 
-def add_book(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        author = request.POST.get('author')
+# Retrieve, update, or delete an author
+class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
 
-        new_book = Book(title=title, author=author)
-        new_book.save()
+# List and create genres
+class GenreListCreate(generics.ListCreateAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
 
-        return HttpResponse("Book added successfully", status=201)
-    else:
-        return render(request, 'library/add_book.html')
-
-
+# Retrieve, update, or delete a genre
+class GenreDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
